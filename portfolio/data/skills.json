@@ -1,0 +1,162 @@
+[
+  {
+    "id": "skill-1",
+    "name": "JavaScript/TypeScript",
+    "category": "development",
+    "level": 5,
+    "years": 8,
+    "order": 1
+  },
+  {
+    "id": "skill-2",
+    "name": "React/Next.js",
+    "category": "development",
+    "level": 5,
+    "years": 6,
+    "order": 2
+  },
+  {
+    "id": "skill-3",
+    "name": "Node.js",
+    "category": "development",
+    "level": 4,
+    "years": 5,
+    "order": 3
+  },
+  {
+    "id": "skill-4",
+    "name": "HTML/CSS",
+    "category": "development",
+    "level": 5,
+    "years": 9,
+    "order": 4
+  },
+  {
+    "id": "skill-5",
+    "name": "Tailwind CSS",
+    "category": "development",
+    "level": 4,
+    "years": 3,
+    "order": 5
+  },
+  {
+    "id": "skill-6",
+    "name": "Git/GitHub",
+    "category": "development",
+    "level": 5,
+    "years": 8,
+    "order": 6
+  },
+  {
+    "id": "skill-7",
+    "name": "AWS",
+    "category": "development",
+    "level": 3,
+    "years": 4,
+    "order": 7
+  },
+  {
+    "id": "skill-8",
+    "name": "Docker",
+    "category": "development",
+    "level": 3,
+    "years": 3,
+    "order": 8
+  },
+  {
+    "id": "skill-9",
+    "name": "UI/UXデザイン",
+    "category": "design",
+    "level": 4,
+    "years": 9,
+    "order": 9
+  },
+  {
+    "id": "skill-10",
+    "name": "Figma",
+    "category": "design",
+    "level": 4,
+    "years": 5,
+    "order": 10
+  },
+  {
+    "id": "skill-11",
+    "name": "Adobe Creative Suite",
+    "category": "design",
+    "level": 3,
+    "years": 7,
+    "order": 11
+  },
+  {
+    "id": "skill-12",
+    "name": "プロトタイピング",
+    "category": "design",
+    "level": 4,
+    "years": 6,
+    "order": 12
+  },
+  {
+    "id": "skill-13",
+    "name": "ユーザーリサーチ",
+    "category": "design",
+    "level": 3,
+    "years": 4,
+    "order": 13
+  },
+  {
+    "id": "skill-14",
+    "name": "チームマネジメント",
+    "category": "management",
+    "level": 4,
+    "years": 3,
+    "order": 14
+  },
+  {
+    "id": "skill-15",
+    "name": "プロジェクトマネジメント",
+    "category": "management",
+    "level": 4,
+    "years": 5,
+    "order": 15
+  },
+  {
+    "id": "skill-16",
+    "name": "アジャイル開発",
+    "category": "management",
+    "level": 4,
+    "years": 4,
+    "order": 16
+  },
+  {
+    "id": "skill-17",
+    "name": "スクラム",
+    "category": "management",
+    "level": 3,
+    "years": 3,
+    "order": 17
+  },
+  {
+    "id": "skill-18",
+    "name": "プロダクト企画",
+    "category": "management",
+    "level": 3,
+    "years": 3,
+    "order": 18
+  },
+  {
+    "id": "skill-19",
+    "name": "データ分析",
+    "category": "management",
+    "level": 3,
+    "years": 4,
+    "order": 19
+  },
+  {
+    "id": "skill-20",
+    "name": "メンタリング",
+    "category": "management",
+    "level": 4,
+    "years": 5,
+    "order": 20
+  }
+]

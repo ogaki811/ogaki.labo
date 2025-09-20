@@ -1,0 +1,184 @@
+[
+  {
+    "id": "tag-1",
+    "name": "react",
+    "category": "development",
+    "color": "#61DAFB",
+    "order": 1
+  },
+  {
+    "id": "tag-2", 
+    "name": "nextjs",
+    "category": "development",
+    "color": "#000000",
+    "order": 2
+  },
+  {
+    "id": "tag-3",
+    "name": "typescript",
+    "category": "development", 
+    "color": "#3178C6",
+    "order": 3
+  },
+  {
+    "id": "tag-4",
+    "name": "ecommerce",
+    "category": "business",
+    "color": "#FF6B35",
+    "order": 4
+  },
+  {
+    "id": "tag-5",
+    "name": "performance",
+    "category": "optimization",
+    "color": "#4CAF50",
+    "order": 5
+  },
+  {
+    "id": "tag-6",
+    "name": "design-system",
+    "category": "design",
+    "color": "#9C27B0",
+    "order": 6
+  },
+  {
+    "id": "tag-7",
+    "name": "figma",
+    "category": "design",
+    "color": "#F24E1E",
+    "order": 7
+  },
+  {
+    "id": "tag-8",
+    "name": "storybook",
+    "category": "development",
+    "color": "#FF4785",
+    "order": 8
+  },
+  {
+    "id": "tag-9",
+    "name": "component-library",
+    "category": "development",
+    "color": "#2196F3",
+    "order": 9
+  },
+  {
+    "id": "tag-10",
+    "name": "agile",
+    "category": "management",
+    "color": "#FF9800",
+    "order": 10
+  },
+  {
+    "id": "tag-11",
+    "name": "scrum",
+    "category": "management",
+    "color": "#FFC107",
+    "order": 11
+  },
+  {
+    "id": "tag-12",
+    "name": "team-management",
+    "category": "management",
+    "color": "#795548",
+    "order": 12
+  },
+  {
+    "id": "tag-13",
+    "name": "process-improvement",
+    "category": "management",
+    "color": "#607D8B",
+    "order": 13
+  },
+  {
+    "id": "tag-14",
+    "name": "mobile-app",
+    "category": "development",
+    "color": "#E91E63",
+    "order": 14
+  },
+  {
+    "id": "tag-15",
+    "name": "ux-design",
+    "category": "design",
+    "color": "#673AB7",
+    "order": 15
+  },
+  {
+    "id": "tag-16",
+    "name": "user-research",
+    "category": "design",
+    "color": "#3F51B5",
+    "order": 16
+  },
+  {
+    "id": "tag-17",
+    "name": "prototyping",
+    "category": "design",
+    "color": "#009688",
+    "order": 17
+  },
+  {
+    "id": "tag-18",
+    "name": "cicd",
+    "category": "devops",
+    "color": "#FF5722",
+    "order": 18
+  },
+  {
+    "id": "tag-19",
+    "name": "devops",
+    "category": "devops",
+    "color": "#8BC34A",
+    "order": 19
+  },
+  {
+    "id": "tag-20",
+    "name": "automation",
+    "category": "devops",
+    "color": "#CDDC39",
+    "order": 20
+  },
+  {
+    "id": "tag-21",
+    "name": "aws",
+    "category": "infrastructure",
+    "color": "#FF9900",
+    "order": 21
+  },
+  {
+    "id": "tag-22",
+    "name": "infrastructure",
+    "category": "infrastructure",
+    "color": "#9E9E9E",
+    "order": 22
+  },
+  {
+    "id": "tag-23",
+    "name": "saas",
+    "category": "business",
+    "color": "#00BCD4",
+    "order": 23
+  },
+  {
+    "id": "tag-24",
+    "name": "product-management",
+    "category": "management",
+    "color": "#FF6F00",
+    "order": 24
+  },
+  {
+    "id": "tag-25",
+    "name": "mvp",
+    "category": "business",
+    "color": "#8E24AA",
+    "order": 25
+  },
+  {
+    "id": "tag-26",
+    "name": "startup",
+    "category": "business",
+    "color": "#D32F2F",
+    "order": 26
+  }
+]
