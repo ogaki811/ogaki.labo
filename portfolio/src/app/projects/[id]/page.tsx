@@ -19,7 +19,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: ProjectDetailPageProps) {
-  const project = await getProjectById(params.id)
+  const { id } = await params
+  const project = await getProjectById(id)
   if (!project) {
     return {
       title: "プロジェクトが見つかりません"
@@ -29,7 +30,8 @@ export async function generateMetadata({ params }: ProjectDetailPageProps) {
 }
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  const project = await getProjectById(params.id)
+  const { id } = await params
+  const project = await getProjectById(id)
 
   if (!project) {
     notFound()
