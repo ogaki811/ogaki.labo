@@ -1,0 +1,163 @@
+name: Deploy to AWS S3
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  AWS_REGION: 'ap-northeast-1'
+
+jobs:
+  # Build and test job
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: portfolio/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./portfolio
+      run: npm ci
+      
+    - name: Run linting
+      working-directory: ./portfolio
+      run: npm run lint
+      
+    - name: Run type checking
+      working-directory: ./portfolio
+      run: npm run build
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: portfolio-build
+        path: portfolio/out/
+        retention-days: 1
+
+  # Deploy to S3 (only on main branch)
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: portfolio-build
+        path: ./dist
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Deploy to S3
+      run: |
+        # S3バケットに静的ファイルを同期
+        aws s3 sync ./dist s3://${{ secrets.AWS_S3_BUCKET }} \
+          --delete \
+          --cache-control "public, max-age=31536000" \
+          --exclude "*.html" \
+          --exclude "sitemap.xml" \
+          --exclude "robots.txt"
+        
+        # HTMLファイルは別途キャッシュ設定
+        aws s3 sync ./dist s3://${{ secrets.AWS_S3_BUCKET }} \
+          --delete \
+          --cache-control "public, max-age=0, must-revalidate" \
+          --include "*.html" \
+          --include "sitemap.xml" \
+          --include "robots.txt" \
+          --content-type "text/html"
+          
+    - name: Invalidate CloudFront cache
+      if: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} \
+          --paths "/*"
+          
+    - name: Deployment status
+      run: |
+        echo "✅ Deployment completed successfully!"
+        echo "🌐 Website URL: https://${{ secrets.AWS_S3_BUCKET }}"
+        if [ -n "${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
+          echo "🚀 CloudFront URL: https://${{ secrets.AWS_CLOUDFRONT_DOMAIN }}"
+        fi
+
+  # Deployment verification
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Wait for deployment propagation
+      run: sleep 30
+      
+    - name: Verify website accessibility
+      run: |
+        # S3ウェブサイトエンドポイントへのアクセス確認
+        WEBSITE_URL="https://${{ secrets.AWS_S3_BUCKET }}"
+        
+        echo "Checking website accessibility..."
+        STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$WEBSITE_URL" || echo "000")
+        
+        if [ "$STATUS_CODE" = "200" ]; then
+          echo "✅ Website is accessible (Status: $STATUS_CODE)"
+        else
+          echo "❌ Website is not accessible (Status: $STATUS_CODE)"
+          exit 1
+        fi
+        
+    - name: Check critical pages
+      run: |
+        BASE_URL="https://${{ secrets.AWS_S3_BUCKET }}"
+        PAGES=("/" "/projects" "/skills" "/career" "/contact" "/sitemap.xml" "/robots.txt")
+        
+        echo "Checking critical pages..."
+        for page in "${PAGES[@]}"; do
+          echo "Checking: $BASE_URL$page"
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL$page" || echo "000")
+          
+          if [ "$STATUS_CODE" = "200" ]; then
+            echo "✅ $page - OK ($STATUS_CODE)"
+          else
+            echo "❌ $page - FAILED ($STATUS_CODE)"
+          fi
+        done
+
+# 通知設定（オプション）
+  notify:
+    needs: [deploy, verify]
+    runs-on: ubuntu-latest
+    if: always() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Notify deployment result
+      env:
+        DEPLOY_STATUS: ${{ needs.deploy.result }}
+        VERIFY_STATUS: ${{ needs.verify.result }}
+      run: |
+        if [ "$DEPLOY_STATUS" = "success" ] && [ "$VERIFY_STATUS" = "success" ]; then
+          echo "🎉 Deployment and verification completed successfully!"
+          # ここでSlackやメール通知などを追加可能
+        else
+          echo "❌ Deployment or verification failed"
+          echo "Deploy status: $DEPLOY_STATUS"
+          echo "Verify status: $VERIFY_STATUS"
+        fi

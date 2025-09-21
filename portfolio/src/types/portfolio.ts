@@ -58,7 +58,7 @@ export interface Skill {
 export interface Tag {
   id: string
   name: string
-  category: 'technology' | 'skill' | 'domain'
+  category: 'development' | 'design' | 'management' | 'devops' | 'infrastructure' | 'business' | 'optimization'
   color: string // 表示色
   count: number // 使用回数
 }

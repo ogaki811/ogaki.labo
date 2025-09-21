@@ -10,51 +10,17 @@ export const metadata = generateMetadata({
   path: "/projects"
 })
 
-interface SearchParams {
-  category?: string
-  tag?: string
-  search?: string
-}
-
-interface ProjectsPageProps {
-  searchParams: SearchParams
-}
-
-export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
+export default async function ProjectsPage() {
   const [projects, categories, tags] = await Promise.all([
     getProjects(),
     getProjectCategories(),
     getProjectTags()
   ])
 
-  const { category, tag, search } = searchParams
-
-  // Filter projects based on search params
-  let filteredProjects = sortByOrder(projects)
-
-  if (category) {
-    filteredProjects = filteredProjects.filter(project => project.category === category)
-  }
-
-  if (tag) {
-    filteredProjects = filteredProjects.filter(project => 
-      project.tags && project.tags.includes(tag)
-    )
-  }
-
-  if (search) {
-    const searchLower = search.toLowerCase()
-    filteredProjects = filteredProjects.filter(project =>
-      project.title.toLowerCase().includes(searchLower) ||
-      project.description.toLowerCase().includes(searchLower) ||
-      project.detailDescription?.toLowerCase().includes(searchLower) ||
-      project.technologies.some(tech => tech.toLowerCase().includes(searchLower)) ||
-      project.tags?.some(tag => tag.toLowerCase().includes(searchLower))
-    )
-  }
-
-  const projectsByCategory = groupBy(filteredProjects, 'category')
-  const featuredProjects = filteredProjects.filter(project => project.featured)
+  // Sort projects by order
+  const sortedProjects = sortByOrder(projects)
+  const projectsByCategory = groupBy(sortedProjects, 'category')
+  const featuredProjects = sortedProjects.filter(project => project.featured)
 
   return (
     <div className="min-h-screen py-8">
@@ -74,10 +40,10 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
             <div className="text-2xl font-bold text-blue-600 mb-1">
-              {filteredProjects.length}
+              {sortedProjects.length}
             </div>
             <div className="text-sm text-gray-600">
-              {category || tag || search ? 'フィルター結果' : '総プロジェクト数'}
+              総プロジェクト数
             </div>
           </div>
           <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
@@ -102,14 +68,10 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
 
         <Suspense fallback={<ProjectsLoading />}>
           <ProjectsClient
-            projects={filteredProjects}
+            projects={sortedProjects}
             categories={categories}
             tags={tags}
-            initialFilters={{
-              category,
-              tag,
-              search
-            }}
+            initialFilters={{}}
           />
         </Suspense>
       </div>

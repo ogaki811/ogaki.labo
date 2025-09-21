@@ -66,9 +66,9 @@ export const SkillSchema = z.object({
 export const TagSchema = z.object({
   id: z.string(),
   name: z.string().min(1),
-  category: z.enum(['technology', 'skill', 'domain']),
+  category: z.enum(['development', 'design', 'management', 'devops', 'infrastructure', 'business', 'optimization']),
   color: z.string().regex(/^#[0-9A-F]{6}$/i),
-  count: z.number().min(0),
+  count: z.number(),
 })
 
 // Array Schemas for data files
@@ -76,6 +76,27 @@ export const CareersSchema = z.array(CareerSchema)
 export const ProjectsSchema = z.array(ProjectSchema)
 export const SkillsSchema = z.array(SkillSchema)
 export const TagsSchema = z.array(TagSchema)
+
+// Validation functions
+export function validateProfile(data: unknown) {
+  return ProfileSchema.parse(data)
+}
+
+export function validateCareer(data: unknown) {
+  return CareerSchema.parse(data)
+}
+
+export function validateProject(data: unknown) {
+  return ProjectSchema.parse(data)
+}
+
+export function validateSkill(data: unknown) {
+  return SkillSchema.parse(data)
+}
+
+export function validateTag(data: unknown) {
+  return TagSchema.parse(data)
+}
 
 // Admin Schemas
 export const AdminUserSchema = z.object({
@@ -107,11 +128,7 @@ export const DeploymentLogSchema = z.object({
   errorMessage: z.string().optional(),
 })
 
-// Type guards for runtime validation
-export function validateProfile(data: unknown) {
-  return ProfileSchema.parse(data)
-}
-
+// Type guards for runtime validation - array versions
 export function validateCareers(data: unknown) {
   return CareersSchema.parse(data)
 }

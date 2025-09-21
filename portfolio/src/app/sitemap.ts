@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next'
 import { getProjects } from '@/lib/data'
 import { SITE_CONFIG } from '@/lib/constants'
 
+export const dynamic = 'force-static'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projects = await getProjects()
 

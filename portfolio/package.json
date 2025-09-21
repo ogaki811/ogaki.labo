@@ -6,7 +6,19 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "export": "next build && next export",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "analyze": "ANALYZE=true npm run build",
+    "clean": "rm -rf .next out node_modules/.cache",
+    "optimize-images": "node scripts/optimize-images.js",
+    "prebuild": "npm run optimize-images",
+    "test": "npm run type-check && npm run lint",
+    "prepare": "npm run type-check && npm run lint",
+    "precommit": "npm run format && npm run lint:fix && npm run type-check"
   },
   "dependencies": {
     "clsx": "^2.1.1",

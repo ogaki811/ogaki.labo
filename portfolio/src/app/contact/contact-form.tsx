@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { CONTACT_CONFIG, ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/lib/constants'
+import { LoadingButton } from '@/components/ui/loading'
+import { useScreenReader } from '@/hooks/use-accessibility'
 
 interface FormData {
   name: string
@@ -17,6 +19,9 @@ interface FormErrors {
 }
 
 export default function ContactForm() {
+  const formRef = useRef<HTMLFormElement>(null)
+  const { announce } = useScreenReader()
+  
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -30,6 +35,7 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [submitTime] = useState(Date.now())
+  const [submitMessage, setSubmitMessage] = useState('')
 
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {}
@@ -88,6 +94,7 @@ export default function ContactForm() {
     const formErrors = validateForm()
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
+      announce('フォームにエラーがあります。修正してください。', 'assertive')
       return
     }
 
@@ -95,17 +102,43 @@ export default function ContactForm() {
     setErrors({})
 
     try {
-      // In a real application, this would send to an API endpoint
-      // For now, we'll simulate a successful submission
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // For static site, create mailto link with form data
+      const subject = encodeURIComponent(`[ポートフォリオ] ${formData.subject}`)
+      const body = encodeURIComponent(
+        `お名前: ${formData.name}\n` +
+        `メールアドレス: ${formData.email}\n` +
+        `会社名: ${formData.company || '（未入力）'}\n` +
+        `件名: ${formData.subject}\n\n` +
+        `メッセージ:\n${formData.message}`
+      )
       
-      // Here you would typically send the form data to your backend
-      console.log('Form submitted:', formData)
+      const mailtoLink = `mailto:contact@example.com?subject=${subject}&body=${body}`
       
+      // Open email client
+      window.location.href = mailtoLink
+      
+      // Show success message
       setIsSubmitted(true)
+      setSubmitMessage('メールクライアントが起動しました。送信を完了してください。')
+      announce('メールクライアントが起動しました。', 'polite')
+      
+      // Reset form after delay
+      setTimeout(() => {
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          subject: '',
+          message: '',
+          hp_field: ''
+        })
+        setIsSubmitted(false)
+      }, 3000)
+      
     } catch (error) {
-      console.error('Form submission error:', error)
-      setErrors({ general: ERROR_MESSAGES.NETWORK_ERROR })
+      console.error('Contact form error:', error)
+      setErrors({ general: 'エラーが発生しました。直接メールでお問い合わせください。' })
+      announce('エラーが発生しました。', 'assertive')
     } finally {
       setIsSubmitting(false)
     }
@@ -123,7 +156,7 @@ export default function ContactForm() {
           メッセージを送信しました
         </h3>
         <p className="text-gray-600 mb-6">
-          お問い合わせありがとうございます。24時間以内にご返信いたします。
+          {submitMessage || 'お問い合わせありがとうございます。24時間以内にご返信いたします。'}
         </p>
         <button
           onClick={() => {
@@ -276,27 +309,13 @@ export default function ContactForm() {
 
       {/* Submit Button */}
       <div>
-        <button
+        <LoadingButton
           type="submit"
-          disabled={isSubmitting}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
-            isSubmitting
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
-          }`}
+          loading={isSubmitting}
+          className="w-full py-3 px-4 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? (
-            <div className="flex items-center justify-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              送信中...
-            </div>
-          ) : (
-            'メッセージを送信'
-          )}
-        </button>
+          {isSubmitting ? '送信中...' : 'メッセージを送信'}
+        </LoadingButton>
       </div>
 
       {/* Privacy Notice */}

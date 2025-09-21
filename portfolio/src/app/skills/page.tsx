@@ -8,33 +8,20 @@ export const metadata = generateMetadata({
   path: "/skills"
 })
 
-interface SearchParams {
-  category?: string
-}
-
-interface SkillsPageProps {
-  searchParams: SearchParams
-}
-
-export default async function SkillsPage({ searchParams }: SkillsPageProps) {
+export default async function SkillsPage() {
   const skills = await getSkills()
-  const { category } = searchParams
 
-  // Filter skills by category if specified
-  let filteredSkills = sortByOrder(skills)
-  if (category) {
-    filteredSkills = filteredSkills.filter(skill => skill.category === category)
-  }
-
-  const skillsByCategory = groupBy(filteredSkills, 'category')
+  // Sort skills by order
+  const sortedSkills = sortByOrder(skills)
+  const skillsByCategory = groupBy(sortedSkills, 'category')
   const categories = Object.keys(skillsByCategory)
 
   // Calculate statistics
-  const totalSkills = filteredSkills.length
-  const averageLevel = filteredSkills.reduce((sum, skill) => sum + skill.level, 0) / totalSkills
-  const averageYears = filteredSkills.reduce((sum, skill) => sum + skill.years, 0) / totalSkills
-  const maxLevel = Math.max(...filteredSkills.map(skill => skill.level))
-  const maxYears = Math.max(...filteredSkills.map(skill => skill.years))
+  const totalSkills = sortedSkills.length
+  const averageLevel = sortedSkills.reduce((sum, skill) => sum + skill.level, 0) / totalSkills
+  const averageYears = sortedSkills.reduce((sum, skill) => sum + skill.years, 0) / totalSkills
+  const maxLevel = Math.max(...sortedSkills.map(skill => skill.level))
+  const maxYears = Math.max(...sortedSkills.map(skill => skill.years))
 
   const getCategoryLabel = (category: string) => {
     switch (category) {
@@ -92,23 +79,15 @@ export default async function SkillsPage({ searchParams }: SkillsPageProps) {
           <div className="flex flex-wrap gap-2 justify-center">
             <a
               href="/skills"
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                !category
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className="px-4 py-2 rounded-lg font-medium transition-colors bg-blue-600 text-white"
             >
               すべて
             </a>
             {['development', 'design', 'management'].map((cat) => (
               <a
                 key={cat}
-                href={`/skills?category=${cat}`}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  category === cat
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                href={`/skills#${cat}`}
+                className="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
                 {getCategoryLabel(cat)}
               </a>

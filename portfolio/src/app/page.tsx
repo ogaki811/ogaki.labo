@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { getProfile, getFeaturedProjects, getOverviewStats } from "@/lib/data"
-import { generateMetadata } from "@/lib/seo"
+import { generateMetadata, generatePersonStructuredData, generateWebsiteStructuredData, generateJSONLD } from "@/lib/seo"
 import { SOCIAL_LINKS } from "@/lib/constants"
 import { formatDate } from "@/lib/utils"
 
@@ -18,14 +18,32 @@ export default async function Home() {
     getOverviewStats()
   ])
 
+  const personData = generatePersonStructuredData()
+  const websiteData = generateWebsiteStructuredData()
+
   return (
-    <div className="min-h-screen">
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: generateJSONLD(personData)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: generateJSONLD(websiteData)
+        }}
+      />
+      
+      <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative py-20 px-4 bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8">
             <Image
-              src={profile.image}
+              src={profile.image || '/uploads/profile-photo.jpg'}
               alt={profile.name}
               width={120}
               height={120}
@@ -221,6 +239,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   )
 }

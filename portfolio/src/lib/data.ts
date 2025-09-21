@@ -1,93 +1,100 @@
-import fs from 'fs'
-import path from 'path'
 import type { Profile, Career, Project, Skill, Tag } from '@/types/portfolio'
 import { validateProfile, validateCareer, validateProject, validateSkill, validateTag } from './validation'
 
-const dataDirectory = path.join(process.cwd(), 'data')
+// Import JSON data directly for static site generation
+import profileData from '../../data/profile.json'
+import careerData from '../../data/career.json'
+import projectsData from '../../data/projects.json'
+import skillsData from '../../data/skills.json'
+import tagsData from '../../data/tags.json'
 
-// Cache for data to avoid multiple file reads in development
+// Cache for data to avoid multiple validation calls
 const cache = new Map<string, any>()
-
-/**
- * Generic function to load and validate JSON data
- */
-async function loadJsonData<T>(
-  filename: string,
-  validator: (data: unknown) => T
-): Promise<T> {
-  const cacheKey = filename
-  
-  if (cache.has(cacheKey)) {
-    return cache.get(cacheKey)
-  }
-
-  try {
-    const filePath = path.join(dataDirectory, filename)
-    const fileContents = fs.readFileSync(filePath, 'utf8')
-    const jsonData = JSON.parse(fileContents)
-    const validatedData = validator(jsonData)
-    
-    cache.set(cacheKey, validatedData)
-    return validatedData
-  } catch (error) {
-    console.error(`Error loading ${filename}:`, error)
-    throw new Error(`Failed to load ${filename}`)
-  }
-}
 
 /**
  * Load profile data
  */
 export async function getProfile(): Promise<Profile> {
-  return loadJsonData('profile.json', validateProfile)
+  const cacheKey = 'profile'
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)
+  }
+  
+  const validatedData = validateProfile(profileData)
+  cache.set(cacheKey, validatedData)
+  return validatedData
 }
 
 /**
  * Load career data
  */
 export async function getCareer(): Promise<Career[]> {
-  return loadJsonData('career.json', (data) => {
-    if (!Array.isArray(data)) {
-      throw new Error('Career data must be an array')
-    }
-    return data.map(validateCareer)
-  })
+  const cacheKey = 'career'
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)
+  }
+  
+  if (!Array.isArray(careerData)) {
+    throw new Error('Career data must be an array')
+  }
+  
+  const validatedData = careerData.map(validateCareer)
+  cache.set(cacheKey, validatedData)
+  return validatedData
 }
 
 /**
  * Load projects data
  */
 export async function getProjects(): Promise<Project[]> {
-  return loadJsonData('projects.json', (data) => {
-    if (!Array.isArray(data)) {
-      throw new Error('Projects data must be an array')
-    }
-    return data.map(validateProject)
-  })
+  const cacheKey = 'projects'
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)
+  }
+  
+  if (!Array.isArray(projectsData)) {
+    throw new Error('Projects data must be an array')
+  }
+  
+  const validatedData = projectsData.map(validateProject)
+  cache.set(cacheKey, validatedData)
+  return validatedData
 }
 
 /**
  * Load skills data
  */
 export async function getSkills(): Promise<Skill[]> {
-  return loadJsonData('skills.json', (data) => {
-    if (!Array.isArray(data)) {
-      throw new Error('Skills data must be an array')
-    }
-    return data.map(validateSkill)
-  })
+  const cacheKey = 'skills'
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)
+  }
+  
+  if (!Array.isArray(skillsData)) {
+    throw new Error('Skills data must be an array')
+  }
+  
+  const validatedData = skillsData.map(validateSkill)
+  cache.set(cacheKey, validatedData)
+  return validatedData
 }
 
 /**
  * Load tags data
  */
 export async function getTags(): Promise<Tag[]> {
-  return loadJsonData('tags.json', (data) => {
-    if (!Array.isArray(data)) {
-      throw new Error('Tags data must be an array')
-    }
-    return data.map(validateTag)
-  })
+  const cacheKey = 'tags'
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)
+  }
+  
+  if (!Array.isArray(tagsData)) {
+    throw new Error('Tags data must be an array')
+  }
+  
+  const validatedData = tagsData.map(validateTag)
+  cache.set(cacheKey, validatedData)
+  return validatedData
 }
 
 /**

@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google"
 import Link from "next/link"
 import { DEFAULT_METADATA, generateOrganizationStructuredData, generateJSONLD } from "@/lib/seo"
 import { NAVIGATION_ITEMS, SOCIAL_LINKS, SITE_CONFIG } from "@/lib/constants"
+import { SkipToContent } from "@/components/ui/accessible-button"
 import "./globals.css"
 
 const inter = Inter({
@@ -37,6 +38,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased bg-white text-gray-900">
+        <SkipToContent />
         <div className="flex flex-col min-h-screen">
           {/* Header */}
           <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -76,7 +78,7 @@ export default function RootLayout({
           </header>
 
           {/* Main Content */}
-          <main className="flex-1">
+          <main id="main-content" className="flex-1">
             {children}
           </main>
 

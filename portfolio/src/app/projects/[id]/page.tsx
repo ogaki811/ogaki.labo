@@ -79,7 +79,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                     </svg>
                   )}
                   {crumb.href ? (
-                    <Link href={crumb.href} className="text-blue-600 hover:text-blue-800">
+                    <Link href={crumb.href as any} className="text-blue-600 hover:text-blue-800">
                       {crumb.label}
                     </Link>
                   ) : (

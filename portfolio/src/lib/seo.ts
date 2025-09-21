@@ -218,26 +218,6 @@ export function generateOrganizationStructuredData() {
   }
 }
 
-/**
- * Generate structured data for project
- */
-export function generateProjectStructuredData(project: Project) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'CreativeWork',
-    name: project.title,
-    description: project.description,
-    creator: {
-      '@type': 'Person',
-      name: SITE_CONFIG.author.name
-    },
-    url: `${SITE_CONFIG.url}/projects/${project.id}`,
-    image: project.images?.[0] ? `${SITE_CONFIG.url}${project.images[0]}` : undefined,
-    keywords: project.tags?.join(', '),
-    about: project.technologies.join(', '),
-    dateCreated: project.id // Could be enhanced with actual creation date
-  }
-}
 
 /**
  * Generate breadcrumb structured data
@@ -392,6 +372,152 @@ export function validateMetadata(metadata: Partial<Metadata>) {
   }
 
   return cleaned
+}
+
+/**
+ * JSON-LD structured data generators
+ */
+export function generatePersonStructuredData() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": SITE_CONFIG.author.name,
+    "jobTitle": "エンジニアリングマネージャー・フロントエンド開発者",
+    "description": SITE_CONFIG.description,
+    "url": SITE_CONFIG.url,
+    "sameAs": [
+      SITE_CONFIG.author.linkedin,
+      SITE_CONFIG.author.github
+    ],
+    "knowsAbout": [
+      "JavaScript",
+      "TypeScript", 
+      "React",
+      "Next.js",
+      "チームマネジメント",
+      "プロダクト開発",
+      "UI/UXデザイン"
+    ]
+  }
+}
+
+export function generateProjectStructuredData(project: Project) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": project.title,
+    "description": project.description,
+    "url": project.url || `${SITE_CONFIG.url}/projects/${project.id}`,
+    "author": {
+      "@type": "Person",
+      "name": SITE_CONFIG.author.name
+    },
+    "keywords": project.tags,
+    "about": project.technologies,
+    "workExample": project.outcome
+  }
+}
+
+export function generateWebsiteStructuredData() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Website",
+    "name": SITE_CONFIG.name,
+    "description": SITE_CONFIG.description,
+    "url": SITE_CONFIG.url,
+    "author": {
+      "@type": "Person", 
+      "name": SITE_CONFIG.author.name
+    },
+    "inLanguage": "ja-JP"
+  }
+}
+
+
+/**
+ * Generate Twitter Card metadata
+ */
+export function generateTwitterMetadata(title: string, description: string, image?: string): Metadata {
+  return {
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      creator: SITE_CONFIG.author.twitter,
+      images: image ? [image] : [`${SITE_CONFIG.url}/og-image.jpg`],
+    }
+  }
+}
+
+/**
+ * Generate Facebook/OG metadata  
+ */
+export function generateOGMetadata(title: string, description: string, image?: string, type: 'website' | 'article' = 'website'): Metadata {
+  return {
+    openGraph: {
+      type,
+      title,
+      description,
+      url: SITE_CONFIG.url,
+      siteName: SITE_CONFIG.name,
+      locale: 'ja_JP',
+      images: [
+        {
+          url: image || `${SITE_CONFIG.url}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: title
+        }
+      ]
+    }
+  }
+}
+
+/**
+ * Generate canonical URL metadata
+ */
+export function generateCanonicalMetadata(path: string): Metadata {
+  return {
+    alternates: {
+      canonical: `${SITE_CONFIG.url}${path}`,
+      languages: {
+        'ja-JP': `${SITE_CONFIG.url}${path}`
+      }
+    }
+  }
+}
+
+/**
+ * Comprehensive metadata generator for pages
+ */
+export function generatePageMetadata({
+  title,
+  description,
+  path = '/',
+  image,
+  type = 'website',
+  keywords,
+  noIndex = false
+}: {
+  title: string
+  description: string  
+  path?: string
+  image?: string
+  type?: 'website' | 'article'
+  keywords?: string[]
+  noIndex?: boolean
+}): Metadata {
+  const fullTitle = path === '/' ? title : `${title} | ${SITE_CONFIG.name}`
+  
+  return {
+    title: fullTitle,
+    description,
+    keywords: keywords || DEFAULT_METADATA.keywords,
+    robots: noIndex ? 'noindex,nofollow' : 'index,follow',
+    ...generateCanonicalMetadata(path),
+    ...generateOGMetadata(fullTitle, description, image, type),
+    ...generateTwitterMetadata(fullTitle, description, image)
+  }
 }
 
 export { DEFAULT_METADATA }
